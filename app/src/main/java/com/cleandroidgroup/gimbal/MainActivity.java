@@ -1,4 +1,4 @@
-package com.sholo.gimballapp;
+package com.cleandroidgroup.gimbal;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.gimbal.android.BeaconEventListener;
 import com.gimbal.android.BeaconManager;
 import com.gimbal.android.BeaconSighting;
+import com.gimbal.android.Gimbal;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -21,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Gimbal.setApiKey(this.getApplication(), "API KEY HERE");
+        Gimbal.setApiKey(this.getApplication(), "97e35120-0c08-4318-b755-a88326fdc2d9");
         beaconSightingListener = new BeaconEventListener() {
             @Override
             public void onBeaconSighting(BeaconSighting sighting) {

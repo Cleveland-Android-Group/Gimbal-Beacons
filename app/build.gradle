@@ -9,7 +9,7 @@ android {
         exclude 'META-INF/license.txt'
     }
     defaultConfig {
-        applicationId "com.sholo.gimballapp"
+        applicationId "com.cleandroidgroup.gimbal"
         minSdkVersion 19
         targetSdkVersion 22
         versionCode 1
