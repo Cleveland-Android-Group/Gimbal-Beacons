@@ -3,63 +3,52 @@ package com.sholo.gimballapp;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.gimbal.android.BeaconEventListener;
 import com.gimbal.android.BeaconManager;
 import com.gimbal.android.BeaconSighting;
-import com.gimbal.android.CommunicationListener;
-import com.gimbal.android.Gimbal;
-import com.gimbal.android.PlaceEventListener;
 
 public class MainActivity extends ActionBarActivity {
 
-    private PlaceEventListener placeEventListener;
-    private CommunicationListener communicationListener;
-
     private BeaconEventListener beaconSightingListener;
     private BeaconManager beaconManager;
+
+    private Toast theToast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Gimbal.setApiKey(this.getApplication(), "Your Key Here");
+        //Gimbal.setApiKey(this.getApplication(), "API KEY HERE");
         beaconSightingListener = new BeaconEventListener() {
             @Override
             public void onBeaconSighting(BeaconSighting sighting) {
                 Log.i("INFO", sighting.toString());
-                Toast.makeText(MainActivity.this, sighting.toString(), Toast.LENGTH_LONG).show();
+                theToast.setText(sighting.toString());
+                theToast.show();
             }
         };
         beaconManager = new BeaconManager();
         beaconManager.addListener(beaconSightingListener);
         beaconManager.startListening();
+
+        showToast("Searching for beacons...");
     }
 
+    private void showToast(String text)
+    {
+        if(theToast == null)
+            theToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+        theToast.setText(text);
+        theToast.show();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+    protected void onDestroy() {
+        super.onDestroy();
+        beaconManager.stopListening();
     }
 }
