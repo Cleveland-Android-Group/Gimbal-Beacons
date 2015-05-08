@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Gimbal-Beacons.iml" filepath="$PROJECT_DIR$/Gimbal-Beacons.iml" />
+      <module fileurl="file://$PROJECT_DIR$/GimbalBeacon.iml" filepath="$PROJECT_DIR$/GimbalBeacon.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
