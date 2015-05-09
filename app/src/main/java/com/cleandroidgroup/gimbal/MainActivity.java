@@ -3,6 +3,7 @@ package com.cleandroidgroup.gimbal;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -19,14 +20,11 @@ import java.util.Dictionary;
 import java.util.HashMap;
 
 public class MainActivity extends ActionBarActivity {
-
     private BeaconEventListener beaconSightingListener;
     private BeaconManager beaconManager;
 
-    private Toast theToast;
     private ViewGroup rootView;
-
-    private HashMap<String, TextView> beaconMap;
+    private HashMap<String, ViewGroup> beaconMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,53 +32,48 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
         rootView = (ViewGroup) findViewById(R.id.root_view);
-
-        beaconMap = new HashMap<String, TextView>();
+        beaconMap = new HashMap<>();
 
         Gimbal.setApiKey(this.getApplication(), "97e35120-0c08-4318-b755-a88326fdc2d9");
         beaconSightingListener = new BeaconEventListener() {
             @Override
             public void onBeaconSighting(BeaconSighting sighting) {
-
-                TextView tv;
-                String key = sighting.getBeacon().getIdentifier();
-                if(!beaconMap.containsKey(key))
-                {
-                    tv = new TextView(MainActivity.this);
-                    tv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,
-                            ViewGroup.LayoutParams.WRAP_CONTENT));
-                    beaconMap.put(key, tv);
-                    rootView.addView(tv);
-                } else
-                {
-                    tv = beaconMap.get(key);
-                }
-
-                tv.setText(String.format("Name: %s; Temp: %s; Battery: %s",
-                    sighting.getBeacon().getName(),
-                    sighting.getBeacon().getTemperature(),
-                    sighting.getBeacon().getBatteryLevel()));
+                updateBeaconsForSighting(sighting);
             }
         };
         beaconManager = new BeaconManager();
         beaconManager.addListener(beaconSightingListener);
-        beaconManager.startListening();
-
-        showToast("Searching for beacons...");
-    }
-
-    private void showToast(String text)
-    {
-        if(theToast == null)
-            theToast = Toast.makeText(this, text, Toast.LENGTH_SHORT);
-
-        theToast.setText(text);
-        theToast.show();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+        beaconManager.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
         beaconManager.stopListening();
+    }
+
+    private void updateBeaconsForSighting(BeaconSighting sighting) {
+        final ViewGroup viewGroup;
+        final String key = sighting.getBeacon().getIdentifier();
+
+        if(!beaconMap.containsKey(key))
+        {
+            viewGroup = (ViewGroup) LayoutInflater.from(MainActivity.this).inflate(R.layout.sensor_row, null);
+            ((TextView) viewGroup.findViewById(R.id.sensor_name)).setText(sighting.getBeacon().getName());
+            beaconMap.put(key, viewGroup);
+            rootView.addView(viewGroup);
+        } else
+            viewGroup = beaconMap.get(key);
+
+        ((TextView)viewGroup.findViewById(R.id.sensor_detail)).setText(
+                String.format("RSSI: %s; Temp: %s; Battery: %s",
+                        sighting.getRSSI(),
+                        sighting.getBeacon().getTemperature(),
+                        sighting.getBeacon().getBatteryLevel()));
     }
 }
